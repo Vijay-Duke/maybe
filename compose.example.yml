@@ -43,6 +43,13 @@ x-rails-env: &rails_env
   REDIS_URL: redis://redis:6379/1
 # NOTE: enabling OpenAI will incur costs when you use AI-related features in the app (chat, rules).  Make sure you have set appropriate spend limits on your account before adding this.
   OPENAI_ACCESS_TOKEN: ${OPENAI_ACCESS_TOKEN}
+# Optional: Use a custom OpenAI-compatible API endpoint (e.g., Ollama, LM Studio, LocalAI, or any OpenAI-compatible server)
+# Example for Ollama: http://host.docker.internal:11434/v1
+# Example for LM Studio: http://host.docker.internal:1234/v1
+  OPENAI_BASE_URI: ${OPENAI_BASE_URI:-}
+# Optional: Comma-separated list of additional models to support (useful with custom endpoints)
+# Example: llama3.2,mistral,codellama
+  OPENAI_CUSTOM_MODELS: ${OPENAI_CUSTOM_MODELS:-}
 
 services:
   web:

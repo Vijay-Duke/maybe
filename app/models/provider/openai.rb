@@ -4,14 +4,25 @@ class Provider::Openai < Provider
   # Subclass so errors caught in this provider are raised as Provider::Openai::Error
   Error = Class.new(Provider::Error)
 
-  MODELS = %w[gpt-4.1]
+  DEFAULT_MODELS = %w[gpt-4.1]
 
-  def initialize(access_token)
-    @client = ::OpenAI::Client.new(access_token: access_token)
+  def initialize(access_token, uri_base: nil, custom_models: nil)
+    client_options = { access_token: access_token }
+    client_options[:uri_base] = uri_base if uri_base.present?
+    @client = ::OpenAI::Client.new(**client_options)
+    @custom_endpoint = uri_base.present?
+    @custom_models = custom_models&.split(",")&.map(&:strip) || []
   end
 
   def supports_model?(model)
-    MODELS.include?(model)
+    # When using a custom endpoint, accept any model
+    return true if @custom_endpoint
+
+    available_models.include?(model)
+  end
+
+  def available_models
+    DEFAULT_MODELS + @custom_models
   end
 
   def auto_categorize(transactions: [], user_categories: [])
